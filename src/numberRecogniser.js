@@ -13,5 +13,9 @@ var grammer = {
 	}
 }
 
-numberRecogniser.parser = new Parser(grammer);
+numberRecogniser.recogniseInteger = function(integer) {
+	var parser = new Parser(grammer);
+	return parser.parse(integer);
+}
+
 module.exports = numberRecogniser;
