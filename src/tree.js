@@ -1,34 +1,52 @@
-var numToWord = require('number-to-words');
-var Operation = require("./operation");
+var SemanticAnalyser = require('./semanticAnalyser');
 
-var Tree = function (left, operation, right) {
-    this.left = left;
-    this.operation = operation;
-    this.right = right;
+function Tree() {
+    this.branches = [];
+}
+
+Tree.prototype.addBranch = function (branch) {
+    this.branches.push(branch);  
 };
 
+Tree.prototype.getBranch = function (index) {
+    return this.branches[index];
+};
 
-Tree.prototype.toString = function() {
-    var operations = {'+': 'plus', '-': 'minus', '*': 'times', '=': 'equals'};
-    if(typeof this.left == "number" && typeof this.right == "number")
-        return "(" + numToWord.toWords(this.left) + " " + operations[this.operation] + " " + numToWord.toWords(this.right) + ")";
-    if(typeof this.left == "object" && typeof this.right == "number")
-        return "(" + this.left.toString() + " " + operations[this.operation] + " " + numToWord.toWords(this.right) + ")";
-    if(typeof this.right == "object" && typeof this.left == "number")
-        return "(" + numToWord.toWords(this.left) + " " + operations[this.operation] + " " + this.right.toString() + ")";
-    return "(" + this.left.toString() + " " + operations[this.operation] + " " + this.right.toString() + ")";
+Tree.prototype.addBranchAtFirst = function (branch) {
+    return this.branches.unshift(branch);
 };
 
 Tree.prototype.evaluate = function () {
-    var operation = new Operation(this.operation);
-    if(this.left instanceof Tree) {
-        this.left = this.left.evaluate()
-    }
+    var symbolTable = {};
+    var result = null;
+    this.branches.forEach(function (branch) {
+        result = branch.evaluate(symbolTable);
+    });
+    return result;
+};
 
-    if(this.right instanceof Tree) {
-        this.right = this.right.evaluate()
-    }
-    return operation.performWith(this.left, this.right);
+Tree.prototype.generateNumberExpression = function () {
+    var semanticAnalyser = new SemanticAnalyser(this);
+    semanticAnalyser.analyse();
+    return this.branches.map(function(branch) {
+        return branch.generateNumberExpression()
+    }).join('\n');
+};
+
+Tree.prototype.generateWordExpression = function () {
+    var semanticAnalyser = new SemanticAnalyser(this);
+    semanticAnalyser.analyse();
+    return this.branches.map(function(branch) {
+        return branch.generateWordExpression()
+    }).join('\n');
+};
+
+Tree.prototype.generateJavascript = function () {
+    var semanticAnalyser = new SemanticAnalyser(this);
+    semanticAnalyser.analyse();
+    return this.branches.map(function(branch) {
+        return branch.generateJavascript()
+    }).join('\n');
 };
 
 module.exports = Tree;

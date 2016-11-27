@@ -1,45 +1,49 @@
-var Tree = require('../src/tree');
 var assert = require('assert');
-var it = require("mocha").it;
-var describe = require("mocha").describe;
+var UndefinedSymbol = require('../src/exceptions/undefinedSymbol');
+var fs = require('fs');
+var Parser = require('jison').Parser;
+var grammer = fs.readFileSync('/Users/abhishet/projects/jisonLearning/src/calculator.jison','utf-8');
+var parser = new Parser(grammer);
 
 describe('tree', function () {
-    it('should give string representation of 1, + and 2', function () {
-        var tree = new Tree(1, "+", 2);
-        assert.equal("(one plus two)", tree.toString());
+    it('should accommodate branches x=10, x+5 and y=3 in order', function () {
+        var tree = parser.parse('x=10;x+5;y=3;');
+        assert.equal(tree.getBranch(0).right.symbol, 10);
+        assert.equal(tree.getBranch(1).right.symbol, 5);
+        assert.equal(tree.getBranch(2).right.symbol, 3);
     });
-    it('should give string representation of a tree, + and 2', function () {
-        var tree = new Tree(1, "+", 2);
-        var tree1 = new Tree(tree, "+", 3);
-        assert.equal("((one plus two) plus three)", tree1.toString());
+    it('should express 3+4 as (3+4)', function () {
+        var tree = parser.parse('3+4;');
+        var expr = tree.generateNumberExpression();
+        assert.equal(expr, '(3+4)');
     });
-    it('should give string representation of a tree, + and another tree', function () {
-        var tree1 = new Tree(1, "+", 2);
-        var tree2 = new Tree(3, "+", 4);
-        var finalResult = new Tree(tree1, "+", tree2);
-        assert.equal("((one plus two) plus (three plus four))", finalResult.toString());
+    it('should express 3+4 as (three plus four)', function () {
+        var tree = parser.parse('3+4;');
+        var expr = tree.generateWordExpression();
+        assert.equal(expr, '(three plus four)');
     });
-    it('should give string representation of 2+3*4', function () {
-        var tree1 = new Tree(3, "*", 4);
-        var finalResult = new Tree(2, "+", tree1);
-        assert.equal("(two plus (three times four))", finalResult.toString());
+    it('should express a=3;a+4; as (a equals three)(a plus four)', function () {
+        var tree = parser.parse('a=3;a+4;');
+        var expr = tree.generateWordExpression();
+        assert.equal(expr, '(a equals three)\n(a plus four)');
     });
-    it('should give string representation of 10000000000 + 2', function () {
-        var tree = new Tree(1000000000, "+", 2);
-        assert.equal("(one billion plus two)", tree.toString());
+    it('should express 2+4*5; as (two plus (four times five))', function () {
+        var tree = parser.parse('2+4*5;');
+        var expr = tree.generateWordExpression();
+        assert.equal(expr, '(two plus (four times five))');
     });
-    it('should evaluate expression 2+10', function () {
-        var tree = new Tree(10, "+", 2);
-        assert.equal(12, tree.evaluate());
+    it('should generate javascript code for x=10;5+x*2; as var x = 10;console.log(5+(x*2));', function () {
+        var tree = parser.parse('x=10;5+x*2;');
+        var javascriptExpr = tree.generateJavascript();
+        assert.equal(javascriptExpr, 'var x=10;\nconsole.log(5+(x*2));');
     });
-    it('should evaluate expression 2+10*2', function () {
-        var tree = new Tree(10, "*", 2);
-        var result = new Tree(tree, "+", 2);
-        assert.equal(22, result.evaluate());
+    it('should generate javascript code for x=10;5+x*2;6*x as var x = 10;console.log(5+(x*2));console.log(6*x);', function () {
+        var tree = parser.parse('x=10;5+x*2;6*x;');
+        var javascriptExpr = tree.generateJavascript();
+        assert.equal(javascriptExpr, 'var x=10;\nconsole.log(5+(x*2));\nconsole.log(6*x);');
     });
-    it('should evaluate expression a=2', function () {
-        var result = new Tree('a', "=", 2);
-        assert.equal(2, result.evaluate());
-    });
+    it.only('should generate javascript code for if block', function () {
+        var tree = parser.parse('if true {2+3};')
+        console.log(tree);
+    })
 });
-

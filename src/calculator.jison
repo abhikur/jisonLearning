@@ -1,69 +1,130 @@
-%lex
-
 %{
-    Tree = require("./tree.js");
+   var Tree = require("/Users/abhishet/projects/jisonLearning/src/tree.js");
+   var NumberNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/numberNode.js")
+   var VariableNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/variableNode.js")
+   var OperatorNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/operatorNode.js")
+   var AssignmentNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/assignmentNode.js")
+   var Branch = require("/Users/abhishet/projects/jisonLearning/src/branch.js");
+   var tree = new Tree();
 %}
+
+%lex
 
 %%
 \s+             {/* skip whitespace */}
-[0-9]+          {return 'NUM';}
-[a-z]+          {return 'IDENTIFIER';}
+[0-9]+          {return 'number';}
+"if"            {return 'keyword';}
+"true"          {return 'condition';}
+[a-z]+          {return 'identifier';}
 [(] 		    {return '(';}
 [)] 		    {return ')';}
+"{"             {return '{';}
+"}"             {return '}';}
 "="             {return '=';}
+"*"             {return '*';}
+"-"             {return '-';}
 "+"             {return '+';}
+"^"             {return '^';}
 ";"             {return ';';}
 <<EOF>>         {return 'EOF'}
 
 /lex
 
-%right ';'
+%left ';'
 %left '+' '-'
 %left '*' '/'
+%left '^'
 %left '='
 
 
-%start expressions
+%start program
 
 %%
 
-expressions
-	: e EOF
+program
+	: statements EOF
         {
-            console.log($1);
+            var parsedTree = tree;
+            tree = new Tree();
+            return parsedTree;
         }
     ;
 
-e
-    : e '+' e
-        {
-            console.log("plus", " $ 1 = ",$1," $ 2 = ",$2," $ 3 = ",$3)
-            $$ = new Tree($1, $2, $3);
-            console.log("$ $ after plus ", $$);
-        }
-    | e '=' e
-        {
-            $$ = new Tree($1,$2,$3);
-            console.log("$ 1 and $ $ at = ",$1, $$)
+statements
+    : statement
+    | statements statement
+    ;
 
-        }
-	| NUM
+statement
+    : assignment ';'
         {
-            $$=Number(yytext)
+            tree.addBranch($1);
         }
-    | IDENTIFIER
+    | expression ';'
         {
-            $$=yytext
+            tree.addBranch($1);
         }
-    | e ';'
+    | block ';'
         {
-            console.log("ee ; => ", $1,$2)
-        }
-    | e ';' e
-        {
-
-           console.log("$$==> ", $1, $3)
 
         }
     ;
 
+block
+    : keyword condition "{" body "}"
+        {
+            
+        }
+    ;
+
+body
+    : expression
+    ;
+
+assignment
+    : expression '=' expression
+        {
+            $2 = new AssignmentNode($2, this._$);
+            $$ = new Branch($1, $2, $3);
+        }
+    ;
+
+
+expression
+    : expression '+' expression
+        {
+            $2 = new OperatorNode($2, this._$);
+            $$ = new Branch($1,$2,$3);
+
+        }
+    | expression '*' expression
+        {
+            $2 = new OperatorNode($2, this._$);
+            $$ = new Branch($1, $2, $3);
+        }
+    | expression '^' expression
+        {
+            $2 = new OperatorNode($2, this._$);
+            $$ = new Branch($1, $2, $3);
+        }
+    | expression '-' expression
+        {
+            $2 = new OperatorNode($2, this._$);
+            $$ = new Branch($1, $2, $3);
+        }
+	| number
+        {
+            $$ = new NumberNode(Number(yytext), this._$);
+
+        }
+    | identifier
+        {
+            console.log("identifier ke pas aya")
+            $$ = new VariableNode(yytext, this._$);
+
+        }
+    | '(' expression ')'
+        {
+            $$ = $2;
+        }
+    ;
