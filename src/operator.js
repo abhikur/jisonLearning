@@ -33,6 +33,6 @@ Operator.prototype.performWith = function (x, y) {
 Operator.prototype.toString = function () {
     var operations = {"+": "plus", "-": "minus", "*": "times", "=": "equals", "^": "power"};
     return operations[this.operator];
-}
+};
 
 module.exports = Operator;

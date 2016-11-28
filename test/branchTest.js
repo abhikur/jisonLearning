@@ -49,5 +49,13 @@ describe('tree', function () {
         var branch = parser.parse('2+5;').branches[0];
         assert.equal("console.log(2+5);", branch.generateJavascript());
     });
+    it('should give evaluate 2+5 and give 7;', function () {
+        var branch = parser.parse('2+5;').branches[0];
+        assert.equal(7, branch.evaluate());
+    });
+    it('should give evaluate 2+5*3 and give 17;', function () {
+        var branch = parser.parse('2+5*3;').branches[0];
+        assert.equal(17, branch.evaluate());
+    });
 });
 

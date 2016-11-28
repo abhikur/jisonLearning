@@ -2,12 +2,12 @@ var VariableNode = require('./nodes/variableNode');
 
 var Branch = function (left, operation, right) {
     this.left = left;
-    this.operator = operation;
+    this.parent = operation;
     this.right = right;
 };
 
 Branch.prototype.runThrough = function (symbolTable) {
-    return this.operator.runThrough(this.left.runThrough(symbolTable), this.right.runThrough(symbolTable), symbolTable);  
+    return this.parent.runThrough(this.left.runThrough(symbolTable), this.right.runThrough(symbolTable), symbolTable);  
 };
 
 Branch.prototype.generateNumberExpression = function (currentBranch) {
@@ -19,7 +19,7 @@ Branch.prototype.generateNumberExpression = function (currentBranch) {
     if(branch.right instanceof Branch) {
         branch.right = new VariableNode(this.generateNumberExpression(branch.right));
     }
-    treeRep.push(branch.left.symbol, branch.operator.symbol, branch.right.symbol);
+    treeRep.push(branch.left.symbol, branch.parent.symbol, branch.right.symbol);
     return "(" + treeRep.join("") + ")";
 };
 
@@ -32,22 +32,18 @@ Branch.prototype.generateWordExpression = function (currentBranch) {
     if(branch.right instanceof Branch) {
         branch.right = new VariableNode(this.generateWordExpression(branch.right));
     }
-    treeRep.push(branch.left.wordRepresentation(), branch.operator.wordRepresentation(), branch.right.wordRepresentation());
+    treeRep.push(branch.left.wordRepresentation(), branch.parent.wordRepresentation(), branch.right.wordRepresentation());
     return "(" + treeRep.join(" ") + ")";
 };
 
+Branch.prototype.evaluate = function (symbolTable) {
+    var left = this.left.evaluate(symbolTable);
+    var right = this.right.evaluate(symbolTable);
+    return this.parent.evaluate(left, right, symbolTable);
+};
+
 Branch.prototype.generateJavascript = function () {
-    var numberExpr;
-    if(this.operator.type == "assignment") {
-        numberExpr = this.generateNumberExpression().split('');
-        var numberExpWithoutBraces = numberExpr.slice(1, numberExpr.length - 1);
-        var javascriptExp = numberExpWithoutBraces.join('');
-        return 'var ' + javascriptExp + ';';
-    }
-    if(this.operator.type == "operator") {
-        numberExpr = this.generateNumberExpression();
-        return 'console.log' + numberExpr + ';';
-    }
+    return this.parent.generateJavascript(this);
 };
 
 module.exports = Branch;

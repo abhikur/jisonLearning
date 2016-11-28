@@ -5,11 +5,19 @@ function VariableNode(variableName, loc) {
     this.type = 'variable';
 }
 
+VariableNode.prototype.value = function() {
+    return this.symbol;
+};
+
 VariableNode.prototype.wordRepresentation = function () {
     return this.symbol;
 };
 
-VariableNode.prototype.runThrough = function (symbolTable) {
+VariableNode.prototype.runThrough = function () {
+    return this;
+};
+
+VariableNode.prototype.evaluate = function () {
     return this;
 };
 

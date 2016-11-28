@@ -42,8 +42,20 @@ describe('tree', function () {
         var javascriptExpr = tree.generateJavascript();
         assert.equal(javascriptExpr, 'var x=10;\nconsole.log(5+(x*2));\nconsole.log(6*x);');
     });
-    it.only('should generate javascript code for if block', function () {
-        var tree = parser.parse('if true {2+3};')
-        console.log(tree);
+    it('should evaluate a=3;a+4; and give 7', function () {
+        var tree = parser.parse('a=3;a+4;');
+        assert.equal(tree.evaluate().symbol, 7);
+    });
+    it('should evaluate a=3;a+4*4; and give 19', function () {
+        var tree = parser.parse('a=3;a+4*4;');
+        assert.equal(tree.evaluate().symbol, 19);
+    });
+    it('should evaluate a=3+4;', function () {
+        var tree = parser.parse('a=3+4;a+5;');
+        assert.equal(tree.evaluate().symbol, 12);        
+    });
+    it('should evaluate x=10;y=x+20;y+5; and give 35', function () {
+        var tree = parser.parse('x=10;y=x+20;y+5;');
+        assert.equal(tree.evaluate().symbol, 35);
     })
 });

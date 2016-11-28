@@ -4,6 +4,7 @@
    var VariableNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/variableNode.js")
    var OperatorNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/operatorNode.js")
    var AssignmentNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/assignmentNode.js")
+   var ConditionNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/conditionNode.js")
    var Branch = require("/Users/abhishet/projects/jisonLearning/src/branch.js");
    var tree = new Tree();
 %}
@@ -13,7 +14,8 @@
 %%
 \s+             {/* skip whitespace */}
 [0-9]+          {return 'number';}
-"if"            {return 'keyword';}
+"if"            {return 'if';}
+"else"          {return 'else';}
 "true"          {return 'condition';}
 [a-z]+          {return 'identifier';}
 [(] 		    {return '(';}
@@ -64,21 +66,6 @@ statement
         {
             tree.addBranch($1);
         }
-    | block ';'
-        {
-
-        }
-    ;
-
-block
-    : keyword condition "{" body "}"
-        {
-            
-        }
-    ;
-
-body
-    : expression
     ;
 
 assignment
@@ -119,9 +106,7 @@ expression
         }
     | identifier
         {
-            console.log("identifier ke pas aya")
             $$ = new VariableNode(yytext, this._$);
-
         }
     | '(' expression ')'
         {
