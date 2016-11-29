@@ -1,4 +1,5 @@
 var Operator = require('../operator');
+var VariableNode = require('./variableNode');
 
 function AssignmentNode(operator, loc) {
     this.symbol = operator;
@@ -27,8 +28,8 @@ AssignmentNode.prototype.generateJavascript = function (branch) {
     return 'var ' + javascriptExp + ';';  
 };
 
-AssignmentNode.prototype.evaluate = function (left, right, symbolTable) {
-    symbolTable[left.symbol] = right;
+AssignmentNode.prototype.evaluate = function (left, right) {
+    return new VariableNode(left.symbol, left.location);
 };
 
 module.exports = AssignmentNode;

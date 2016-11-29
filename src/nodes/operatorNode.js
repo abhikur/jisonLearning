@@ -27,15 +27,7 @@ OperatorNode.prototype.runThrough = function (left, right, symbolTable) {
     return true;
 };
 
-OperatorNode.prototype.evaluate = function (left, right, symbolTable) {
-    if(left.type == "variable") {
-        if(symbolTable[left.symbol] == null) throw new UndefinedSymbol(left.symbol, left.location)
-        else {left = symbolTable[left.symbol].evaluate()}
-    }
-    if(right.type == "variable"){
-        if(symbolTable[right.symbol] == null) throw new UndefinedSymbol(right.symbol, right.location);
-        else {right = symbolTable[right.symbol].evaluate()}
-    }
+OperatorNode.prototype.evaluate = function (left, right) {
     var operator = new Operator(this.symbol);
     return new NumberNode(operator.performWith(left.symbol, right.symbol));
 };

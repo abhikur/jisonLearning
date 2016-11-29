@@ -2,16 +2,10 @@ var assert = require('assert');
 var UndefinedSymbol = require('../src/exceptions/undefinedSymbol');
 var fs = require('fs');
 var Parser = require('jison').Parser;
-var grammer = fs.readFileSync('/Users/abhishet/projects/jisonLearning/src/calculator.jison','utf-8');
-var parser = new Parser(grammer);
+var grammar = fs.readFileSync('/Users/abhishet/projects/jisonLearning/src/calculator.jison','utf-8');
+var parser = new Parser(grammar);
 
 describe('tree', function () {
-    it('should accommodate branches x=10, x+5 and y=3 in order', function () {
-        var tree = parser.parse('x=10;x+5;y=3;');
-        assert.equal(tree.getBranch(0).right.symbol, 10);
-        assert.equal(tree.getBranch(1).right.symbol, 5);
-        assert.equal(tree.getBranch(2).right.symbol, 3);
-    });
     it('should express 3+4 as (3+4)', function () {
         var tree = parser.parse('3+4;');
         var expr = tree.generateNumberExpression();
@@ -57,5 +51,17 @@ describe('tree', function () {
     it('should evaluate x=10;y=x+20;y+5; and give 35', function () {
         var tree = parser.parse('x=10;y=x+20;y+5;');
         assert.equal(tree.evaluate().symbol, 35);
-    })
+    });
+    it('should evaluate x=10;x; and give 10', function () {
+        var tree = parser.parse('x=10;x;');
+        assert.equal(tree.evaluate().symbol, 10);
+    });
+    it('should evaluate x=10; and give 10', function () {
+        var tree = parser.parse('x=10;');
+        assert.equal(tree.evaluate().symbol, 10);
+    });
+    it('should throw exception for x;', function () {
+        var tree = parser.parse('x;');
+        assert.throws(function(){tree.evaluate()}, UndefinedSymbol);
+    });
 });

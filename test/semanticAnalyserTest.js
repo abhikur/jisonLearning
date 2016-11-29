@@ -2,9 +2,9 @@ var Analyser = require('../src/semanticAnalyser');
 var assert = require('assert');
 var fs = require('fs');
 var Parser = require('jison').Parser;
-var grammer = fs.readFileSync('./src/calculator.jison', 'utf8');
+var grammar = fs.readFileSync('./src/calculator.jison', 'utf8');
 var UndefinedSymbol = require('../src/exceptions/undefinedSymbol');
-var parser = new Parser(grammer);
+var parser = new Parser(grammar);
 
 describe('Semantic analyser', function () {
     it('should give true if the parsed tree is semantically correct', function () {

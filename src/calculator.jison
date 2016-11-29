@@ -7,6 +7,7 @@
    var ConditionNode = require("/Users/abhishet/projects/jisonLearning/src/nodes/conditionNode.js")
    var Branch = require("/Users/abhishet/projects/jisonLearning/src/branch.js");
    var tree = new Tree();
+   var symbolTable = {};
 %}
 
 %lex
@@ -46,8 +47,10 @@
 program
 	: statements EOF
         {
+            tree.addSymbolTable(symbolTable);
             var parsedTree = tree;
             tree = new Tree();
+            symbolTable = {};
             return parsedTree;
         }
     ;
@@ -73,6 +76,7 @@ assignment
         {
             $2 = new AssignmentNode($2, this._$);
             $$ = new Branch($1, $2, $3);
+            symbolTable[$1.symbol] = $3;
         }
     ;
 

@@ -1,8 +1,8 @@
 var assert = require('assert');
 var Parser = require('jison').Parser;
 var fs = require('fs');
-var grammer = fs.readFileSync('/Users/abhishet/projects/jisonLearning/src/calculator.jison','utf-8');
-var parser = new Parser(grammer);
+var grammar = fs.readFileSync('/Users/abhishet/projects/jisonLearning/src/calculator.jison','utf-8');
+var parser = new Parser(grammar);
 
 describe('tree', function () {
     it('should give number expression of 1+2 as (1+2)', function () {
@@ -51,11 +51,11 @@ describe('tree', function () {
     });
     it('should give evaluate 2+5 and give 7;', function () {
         var branch = parser.parse('2+5;').branches[0];
-        assert.equal(7, branch.evaluate());
+        assert.equal(7, branch.evaluate().symbol);
     });
     it('should give evaluate 2+5*3 and give 17;', function () {
         var branch = parser.parse('2+5*3;').branches[0];
-        assert.equal(17, branch.evaluate());
+        assert.equal(17, branch.evaluate().symbol);
     });
 });
 

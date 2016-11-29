@@ -2,25 +2,22 @@ var SemanticAnalyser = require('./semanticAnalyser');
 
 function Tree() {
     this.branches = [];
+    this.symbolTable = {};
 }
 
 Tree.prototype.addBranch = function (branch) {
     this.branches.push(branch);  
 };
 
-Tree.prototype.getBranch = function (index) {
-    return this.branches[index];
-};
-
-Tree.prototype.addBranchAtFirst = function (branch) {
-    return this.branches.unshift(branch);
+Tree.prototype.addSymbolTable = function(table) {
+    this.symbolTable = table;  
 };
 
 Tree.prototype.evaluate = function () {
-    var symbolTable = {};
     var result = null;
+    var table = this.symbolTable;
     this.branches.forEach(function (branch) {
-        result = branch.evaluate(symbolTable);
+        result = branch.evaluate(table);
     });
     return result;
 };
