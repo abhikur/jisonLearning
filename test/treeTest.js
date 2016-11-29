@@ -64,4 +64,7 @@ describe('tree', function () {
         var tree = parser.parse('x;');
         assert.throws(function(){tree.evaluate()}, UndefinedSymbol);
     });
+    it.only('should generate if else block', function () {
+        var tree = parser.parse('if true {a=2;a+3;3+4;};');
+    })
 });

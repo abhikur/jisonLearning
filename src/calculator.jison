@@ -57,18 +57,39 @@ program
 
 statements
     : statement
+        {
+            tree.branches = [$1];
+
+        }
     | statements statement
+        {
+            tree.addBranch($2);
+
+        }
     ;
 
 statement
     : assignment ';'
         {
-            tree.addBranch($1);
+            $$ = $1;
         }
     | expression ';'
         {
-            tree.addBranch($1);
+            $$ = $1;
         }
+    | ifElseBlock ';'
+        {
+            $$ = $1;
+        }
+    ;
+
+ifElseBlock
+    : if condition block
+    | if condition block else block
+    ;
+
+block
+    : "{" statements "}"
     ;
 
 assignment
