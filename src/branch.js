@@ -37,9 +37,7 @@ Branch.prototype.generateWordExpression = function (currentBranch) {
 };
 
 Branch.prototype.evaluate = function (symbolTable) {
-    var left = this.left.evaluate(symbolTable);
-    var right = this.right.evaluate(symbolTable);
-    return this.parent.evaluate(left, right, symbolTable);
+    return this.parent.evaluate(this.left, this.right, symbolTable);
 };
 
 Branch.prototype.generateJavascript = function () {

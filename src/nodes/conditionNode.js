@@ -22,4 +22,11 @@ Condition.prototype.generateJavascript = function (branch) {
     branch.generateNumberExpression()
 };
 
+Condition.prototype.evaluate = function (left, right, symbolTable) {
+    if (this.value())
+        return (left.evaluate(symbolTable));
+    else
+        return (right.evaluate(symbolTable));
+};
+
 module.exports = Condition;

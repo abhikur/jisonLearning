@@ -7,7 +7,7 @@ function VariableNode(variableName, loc) {
 }
 
 VariableNode.initialiseWith = function(value) {
-    var variable = new VariableNode(this.symbol, this.location);
+    return new VariableNode(value);
 };
 
 VariableNode.prototype.wordRepresentation = function () {

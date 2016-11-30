@@ -18,6 +18,7 @@
 "if"            {return 'if';}
 "else"          {return 'else';}
 "true"          {return 'condition';}
+"false"         {return 'condition';}
 [a-z]+          {return 'identifier';}
 [(] 		    {return '(';}
 [)] 		    {return ')';}
@@ -47,9 +48,9 @@
 program
 	: statements EOF
         {
-            tree.addSymbolTable(symbolTable);
-            var parsedTree = tree;
-            tree = new Tree();
+            var parsedTree = $1;
+            parsedTree.addSymbolTable(symbolTable);
+            $1 = new Tree();
             symbolTable = {};
             return parsedTree;
         }
@@ -58,13 +59,15 @@ program
 statements
     : statement
         {
-            tree.branches = [$1];
+            var tree = new Tree();
+            tree.addBranch($1);
 
+            $$ = tree;
         }
     | statements statement
         {
-            tree.addBranch($2);
-
+            $$ = $1;
+            $$.addBranch($2);
         }
     ;
 
@@ -85,11 +88,25 @@ statement
 
 ifElseBlock
     : if condition block
+        {
+            $2 = new ConditionNode($2, this._$);
+            $$ = new Branch($3, $2, null);
+        }
     | if condition block else block
+        {
+            $2 = new ConditionNode($2);
+            $$ = new Branch($3, $2, $5);
+        }
     ;
 
 block
     : "{" statements "}"
+        {
+            $$ = $2;
+            var blockSymbolTable = symbolTable;
+            symbolTable = {};
+            $$.addSymbolTable(blockSymbolTable);
+        }
     ;
 
 assignment

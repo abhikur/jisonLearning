@@ -27,9 +27,9 @@ OperatorNode.prototype.runThrough = function (left, right, symbolTable) {
     return true;
 };
 
-OperatorNode.prototype.evaluate = function (left, right) {
+OperatorNode.prototype.evaluate = function (left, right, symbolTable) {
     var operator = new Operator(this.symbol);
-    return new NumberNode(operator.performWith(left.symbol, right.symbol));
+    return new NumberNode(operator.performWith(left.evaluate(symbolTable).symbol, right.evaluate(symbolTable).symbol));
 };
 
 OperatorNode.prototype.generateJavascript = function (branch) {

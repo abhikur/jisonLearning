@@ -28,8 +28,8 @@ AssignmentNode.prototype.generateJavascript = function (branch) {
     return 'var ' + javascriptExp + ';';  
 };
 
-AssignmentNode.prototype.evaluate = function (left, right) {
-    return new VariableNode(left.symbol, left.location);
+AssignmentNode.prototype.evaluate = function (left, right, symbolTabel) {
+    return new VariableNode(left.evaluate(symbolTabel).symbol, left.evaluate(symbolTabel).location);
 };
 
 module.exports = AssignmentNode;

@@ -64,7 +64,16 @@ describe('tree', function () {
         var tree = parser.parse('x;');
         assert.throws(function(){tree.evaluate()}, UndefinedSymbol);
     });
-    it.only('should generate if else block', function () {
-        var tree = parser.parse('if true {a=2;a+3;3+4;};');
+    it('should generate simple expressions as expected', function () {
+        var tree = parser.parse('a=10;a+3;4+5;');
+        assert.equal(tree.evaluate().symbol, 9);
+    });
+    it('should evaluate if block if condition is true', function () {
+        var tree = parser.parse('if true {a=2;a+4;};');
+        assert.equal(tree.evaluate().symbol, 6);
+    });
+    it('should evaluate else block if the condition is false', function () {
+        var tree = parser.parse('if false {2+2;} else {3+7;};');
+        assert.equal(tree.evaluate().symbol, 10)
     })
 });
